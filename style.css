@@ -61,6 +61,12 @@ body {
 
 .div-selection:hover {
     background-color: var(--accent-color);
+    filter: brightness(90%);
+    color: var(--foreground-color);
+}
+
+.active {
+    background-color: var(--accent-color);
     color: var(--foreground-color);
 }
 

@@ -6,6 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>GraphQL</title>
         <link rel="stylesheet" href="style.css">
+        <script src="script.js" type="module"></script>
     </head>
     <body>
         <div id="header">
@@ -17,10 +18,10 @@
                     <input type="text" id="search" placeholder="Enter your username">
                 </div>
                 <div id="div-selector">
-                    <div class="div-selection" data-target="div"><p>Div 01</p></div>
-                    <div class="div-selection" data-target="go"><p>Go</p></div>
-                    <div class="div-selection" data-target="js"><p>Js</p></div>
-                    <div class="div-selection" data-target="js"><p>Rust</p></div>
+                    <div class="div-selection active" data-value="div01"><p>Div 01</p></div>
+                    <div class="div-selection" data-value="go"><p>Go</p></div>
+                    <div class="div-selection" data-value="js"><p>Js</p></div>
+                    <div class="div-selection" data-value="rust"><p>Rust</p></div>
                 </div>
             </div>
         </div>
@@ -38,6 +39,5 @@
                 <p>Graph 2</p>
             </div>
         </div>
-	    <script src="index.js"></script>
     </body>
 </html>
