@@ -11,8 +11,8 @@ buttons.forEach((button) => {
         buttons.forEach((button) => {
             button.classList.remove('active');
         });
-        event.target.classList.add('active');
-        active_div = event.target.getAttribute('data-value');
+        event.currentTarget.classList.add('active');
+        active_div = event.currentTarget.getAttribute('data-value');
     });
 
 });
