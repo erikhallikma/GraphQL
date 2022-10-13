@@ -1,6 +1,8 @@
 import { 
     userIdRequest,
-    xpRequest,
+    piscineXpRequest,
+    divTaskIdRequest,
+    xpAmountRequest,
  } from "./queries.js";
 
 let active_div = "div01";
@@ -10,8 +12,7 @@ let xp = 0;
 
 // load default user data
 window.addEventListener("load", async (event) => {
-    document.getElementById('login').innerHTML = login;
-    xp = await get_user_xp(id, 0);
+    update_data()
 });
 
 // makes the navbar interactive
@@ -63,39 +64,69 @@ async function get_user_id(login) {
 
 async function get_user_xp(id, offset) {
     let path = "";
-    console.log(active_div)
-
-    //switch case aint working for some mfin reason
+    let piscine = true
+    if (offset === 0) {
+        xp = 0
+    }
     switch (active_div) {
         case "div01":
             path = "/johvi/div-01/";
+            piscine = false
             break;
         case "go":
             path = "/johvi/piscine-go/";
             break;
         case "js":
-            path = "/johvi/div-01/piscine-js/";
+            path = "/johvi/div-01/piscine-js";
             break;
         case "rust":
             path = "/johvi/div-01/rust/";
             break;
+        default:
+            console.log("oopsiewoopsie")
     }
     let data = [];
-    await graphql_query(xpRequest, {id: id, path: path, offset: offset})
+    if (piscine) {
+        await graphql_query(piscineXpRequest, {id: id, path: path, offset: offset})
         .then(response => {
             response.data.transaction.forEach((transaction) => {
                 data.push(transaction.amount);
             });
         })
-    xp = data.reduce((a, b) => a + b, 0);
-    console.log(xp);
-    console.log(data);
-    console.log(path)
+    } else {
+        let objects = []
+        await graphql_query(divTaskIdRequest, {id: id})
+        .then(response => {objects = response})
+        //first element is id 26 (piscine-go) that returns undefined so i shift the array
+        objects.data.progress.shift()
+        for (let obj of objects.data.progress) {
+            data.push(await xpByObjectId(obj.objectId))
+        }
+    }
+    xp += data.reduce((a, b) => a + b, 0);
+    xp = Math.round(xp / 1000) + "kB"
     if (data.length === 50) {
         return await get_user_xp(id, offset + 50);
     }
 }
 
-function update_data() {
-    console.log("update_data");
+async function xpByObjectId(objectId) {
+    return await graphql_query(xpAmountRequest, {objectId: objectId, userId: id})
+    .then(response => {
+        let res = response.data.transaction[0].amount
+        if (response.data.transaction.length > 1) {
+            for (let transaction of response.data.transaction) {
+                if (transaction.amount > res) {
+                    res = transaction.amount
+                }
+            }
+        }
+        return res
+    })
+}
+
+async function update_data() {
+    await get_user_xp(id, 0)
+    document.getElementById('login').innerHTML = login;
+    document.getElementById('xp').innerHTML = xp;
 }
