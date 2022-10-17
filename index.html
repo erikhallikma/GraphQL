@@ -27,10 +27,35 @@
         </div>
         <div id="profile">
             <div id="user-info" class="profile-child">
-                <p id="login"></p>
-                <p id="tranactions">Transactions</p>
-                <p id="xp">xp</p> 
-                <p id="level">level</p> 
+                <p id="login">ErikH</p>
+                <p class="label">Total transactions:</p>
+                <p id="transactions" class="data">...</p>
+                <p class="label">Total xp:</p>
+                <p id="xp" class="data">...</p>
+                <svg viewBox="0 0 36 36">
+                    <circle
+                        fill="none"
+                        stroke="#444"
+                        cx=18
+                        cy=18
+                        r=16
+                        strokeWidth=1
+                    />
+                    <circle class="circle"
+                        fill="none"
+                        stroke={color}
+                        cx=18
+                        cy=18
+                        r=16
+                        transform="rotate(-90 18 18)"
+                        stroke-width=1.5
+                        stroke-dasharray="0,100"
+                        stroke-linecap="round"
+                    />
+                    <text x="18" y="15" id="level-label">Level</text>
+                    <text x="18" y="22" id="level"></text>
+                </svg>
+                <p id="percentage"></p>
             </div>
             <div id="graph1" class="profile-child">
                 <p>Graph 1</p>

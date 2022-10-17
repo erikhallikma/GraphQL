@@ -86,11 +86,49 @@ body {
     grid-row-start: 1;
     grid-row-end: 3;
     height: 840px;
+    max-width: 300px;
+    min-width: 300px;
+    text-align: center;
 }
 
 #login {
+    font-size: 40px;
+    font-weight: 700;
+}
+
+#level-label {
+    fill: var(--accent-color);
+    font-family: sans-serif;
+    font-size: 0.2em;
+    text-anchor: middle;
+}
+
+#level {
+    fill: var(--accent-color);
+    font-family: sans-serif;
+    font-size: 0.5em;
+    text-anchor: middle;
+}
+
+.circle {
+    stroke: var(--accent-color);
+    transition: all 0.5s ;
+}
+
+.label {
     font-size: 20px;
     font-weight: 700;
+}
+
+.data {
+    font-size: 40px;
+    margin-top: -10px;
+    text-align: center;
+}
+
+#percentage {
+    font-size: 20px;
+    margin-top: -10px;
 }
 
 #graph1 {
