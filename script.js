@@ -3,6 +3,7 @@ import {
     piscineXpRequest,
     divTaskIdRequest,
     xpAmountRequest,
+    auditXpRequest,
 } from "./queries.js";
 
 let active_div = "div01";
@@ -12,12 +13,15 @@ let xp = 0;
 let level = 0;
 let transactions = 0;
 let percentage = 0;
+let auditUp = 0;
+let auditDown = 0;
+let auditRatio = 0;
 
 
 let circle = document.querySelector(".circle");
 async function update_data() {
     console.log("updating data")
-    await get_user_xp(id, 0)
+    await get_user_xp(0)
     level = get_user_level()
     percentage = next_level_percentage()
     circle.setAttribute("stroke-dasharray", `${percentage}, 100`);
@@ -31,6 +35,7 @@ async function update_data() {
 // load default user data
 window.addEventListener("load", async (event) => {
     await update_data()
+    await get_audit_ratio(0)
 });
 
 // makes the navbar interactive
@@ -60,7 +65,8 @@ search.addEventListener('keydown', async (event) => {
         document.getElementById('login').innerHTML = login;
         id = await get_user_id(login);
         search.value = "";
-        update_data();
+        await update_data();
+        await get_audit_ratio(0)
     }
 });
 
@@ -81,7 +87,7 @@ async function get_user_id(login) {
         .then(response => {return response.data.user[0].id});
 }
 
-async function get_user_xp(id, offset) {
+async function get_user_xp(offset) {
     let path = "";
     let piscine = true
 
@@ -128,7 +134,7 @@ async function get_user_xp(id, offset) {
 
     xp += data.reduce((a, b) => a + b, 0);
     if (data.length === 50) {
-        return await get_user_xp(id, offset + 50);
+        return await get_user_xp(offset + 50);
     } else {
         //updates the transactions counter
         transactions = data.length + offset
@@ -136,6 +142,7 @@ async function get_user_xp(id, offset) {
 }
 
 // gets a tasks object id and returns xp amount of given task
+// i know its wildly inefficient but cba making it faster since this API is a pain in the ass and whoever designed it should be ashamed
 async function get_object_xp(objectId) {
     return await graphql_query(xpAmountRequest, {objectId: objectId, userId: id})
     .then(response => {
@@ -167,6 +174,56 @@ function levelNeededXP(lvl) {
     return Math.round(lvl * (176 + 3 * lvl * (47 + 11 * lvl)))
 }
 
+// calculate percentage to next level
 function next_level_percentage() {
     return Math.round((xp - levelNeededXP(level)) / (levelNeededXP(level + 1) - levelNeededXP(level)) * 100)
+}
+
+// calculates the users audit ratio
+async function get_audit_ratio(offset) {
+    let upData = []
+    let downData = []
+    await graphql_query(auditXpRequest, {userId: id, offset: offset})
+    .then(response => {
+        response.data.transaction.forEach((transaction) => {
+            if (transaction.type === 'up') {
+                upData.push(transaction.amount);
+            } else {
+                downData.push(transaction.amount);
+            }
+        });
+    })
+
+    auditUp += upData.reduce((a, b) => a + b, 0);
+    auditDown += downData.reduce((a, b) => a + b, 0);
+
+    if (upData.length + downData.length === 50) {
+        return await get_audit_ratio(offset + 50);
+    } else {
+        auditRatio = Math.round(auditUp / auditDown * 10) / 10
+        auditUp = Math.round(auditUp / 1000)
+        auditDown = Math.round(auditDown / 1000)
+        update_audit_graph()
+    }
+}
+
+function update_audit_graph() {
+    let auditRatioPercentage = 0
+    let up = document.querySelector("#auditUp");
+    let down = document.querySelector("#auditDown");
+
+    if (auditRatio > 1) {
+        auditRatioPercentage = Math.round(auditDown / auditUp * 100)
+        up.setAttribute("width", `100`);
+        down.setAttribute("width", `${auditRatioPercentage}`);
+    } else {
+        auditRatioPercentage = Math.round(auditUp / auditDown * 100)
+        up.setAttribute("width", `${auditRatioPercentage}`);
+        down.setAttribute("width", `100`);
+    }
+
+    document.getElementById("up").innerHTML = auditUp + "kB";
+    document.getElementById("down").innerHTML = auditDown + "kB";
+    document.getElementById("ratio").innerHTML = auditRatio;
+
 }

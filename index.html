@@ -27,6 +27,7 @@
         </div>
         <div id="profile">
             <div id="user-info" class="profile-child">
+                <div id="user-info-content"></div>
                 <p id="login">ErikH</p>
                 <p class="label">Total transactions:</p>
                 <p id="transactions" class="data">...</p>
@@ -58,10 +59,35 @@
                 <p id="percentage"></p>
             </div>
             <div id="graph1" class="profile-child">
-                <p>Graph 1</p>
+                <div id="audit-ratio">
+                    <p class="label center">Audit Ratio</p>
+                    <p id="ratio" >...</p>
+                </div>
+                <div id="audit-ratio-graph">
+                    <div id="up-label" >
+                        <p class="bold">Done</p>
+                        <p id="up">...</p>
+                    </div>
+                    <div id="down-label" >
+                        <p class="bold">Recieved</p>
+                        <p id="down">...</p>
+                    </div>
+                    <div class="svg-container">
+                        <svg
+                            width="100%" 
+                            height="150" 
+                            viewBox="0 0 110 80" 
+                            preserveAspectRatio="none"
+                        >
+                            <rect class="bar" id="auditUp" x="0" y="0" width="1" height="30" />
+                            <rect class="bar" id="auditDown" x="0" y="40" width="1" height="30" />
+                        </svg>
+                    </div>
+                </div>
+                
             </div>
             <div id="graph2" class="profile-child">
-                <p>Graph 2</p>
+                <p class="label">Graph 2</p>
             </div>
         </div>
     </body>

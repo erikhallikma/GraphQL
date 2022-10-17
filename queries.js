@@ -54,3 +54,19 @@ query($objectId: Int, $userId: Int){
         path
     }
 }`
+
+export const auditXpRequest = `
+query($userId: Int, $offset: Int){
+    transaction(where:{
+        userId: {_eq: $userId}
+        _or: [
+            {type: {_eq: "down"}}
+            {type: {_eq: "up"}}
+        ]
+    }
+    offset: $offset
+    ) {
+        amount
+        type
+    }
+}`

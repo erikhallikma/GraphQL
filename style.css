@@ -73,6 +73,7 @@ body {
 #profile {
     gap: 10px;
     display: grid;
+    grid-template-columns: 1fr 6fr;
     margin-top: 10px;
 }
 
@@ -80,15 +81,20 @@ body {
     padding: 0px 20px;
     background-color: var(--foreground-color);
     border-radius: 10px;
+    position: relative;
 }
 
 #user-info {
     grid-row-start: 1;
-    grid-row-end: 3;
+    grid-row-end: 4;
     height: 840px;
     max-width: 300px;
     min-width: 300px;
     text-align: center;
+}
+
+#user-info-content {
+    margin-top: 80px ;
 }
 
 #login {
@@ -112,12 +118,13 @@ body {
 
 .circle {
     stroke: var(--accent-color);
-    transition: all 0.5s ;
+    transition: all 1s ;
 }
 
 .label {
     font-size: 20px;
     font-weight: 700;
+    text-align: center;
 }
 
 .data {
@@ -137,8 +144,82 @@ body {
     grid-row-start: 1;
 }
 
+.bar {
+    fill: var(--accent-color);
+    transition: width 1s ;
+}
+
 #graph2 {
     grid-column-start: 2;
     grid-column-end: 3;
     grid-row-start: 2;
+    grid-row-end: 4;
+}
+
+.svg-container {
+    margin-left: 100px;
+}
+
+#audit-ratio-graph {
+    position: absolute;
+    top: 50%;
+    left: 17%;
+    transform: translate(1%, -45%);
+    width: 70%;
+}
+
+#up-label {
+    position: absolute;
+    margin-top: -9px;
+    margin-left: 20px;
+    text-align: right;
+    width: 69px
+}
+
+#up {
+    margin-top: -10px;
+}
+
+#down-label {
+    position: absolute;
+    margin-top: 66px;
+    margin-left: 20px;
+    text-align: right;
+}
+
+#down {
+    margin-top: -10px;
+}
+
+.ratio {
+    margin-left: 100px;
+    margin-bottom: 5px;
+}
+
+#audit-ratio {
+    height: fit-content;
+    width: fit-content;
+    position: absolute;
+    top: 50%;
+    left: 2%;
+    transform: translate(0%, -50%);
+    border: 5px solid var(--accent-color);
+    border-radius: 20px;
+    width: 14%;
+    height: 80%;
+}
+
+.center {
+    margin-top: 45px;
+}
+
+#ratio {
+    margin-top:-10px;
+    font-size: 70px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.bold {
+    font-weight: 700;
 }
