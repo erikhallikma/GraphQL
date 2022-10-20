@@ -87,7 +87,46 @@
                 
             </div>
             <div id="graph2" class="profile-child">
-                <p class="label">Graph 2</p>
+                <p class="label">Timeline</p>
+                <svg viewBox="0 0 500 170" class="chart">
+                    <polyline class="line-graph"
+                        fill="none"
+                        stroke="#82CC5F"
+                        stroke-width="1"
+                        points="
+                            40,150 450,0"
+                    />
+                    <line x1="40" x2="450" y1="150" y2="150" stroke="#82CC5F" stroke-width="2" stroke-linecap="round"></line>
+                    <line x1="40" x2="40" y1="0" y2="150" stroke="#82CC5F" stroke-width="2" stroke-linecap="round"></line>
+                    <g>
+                        <text x="20" y="5" fill="#82CC5F" class="line-chart-label upper-xp">1234kB</text>
+                        <text x="20" y="75" fill="#82CC5F" class="line-chart-label middle-xp">500kB</text>
+                        <text x="28" y="150" fill="#82CC5F" class="line-chart-label">0kB</text>
+
+                        <text x="36" y="150" 
+                        fill="#82CC5F" 
+                        class="line-chart-label first-date"
+                        transform="rotate(15 15 170)"
+                        >0000-00-00</text>
+
+                        <text x="430" y="160" 
+                        fill="#82CC5F" 
+                        class="line-chart-label last-date"
+                        transform="rotate(15 453 220)"
+                        >1111-11-11</text>
+
+                        <text x="75" y="-10" 
+                        class="line-chart-label" 
+                        text-anchor="middle"
+                        transform="rotate(90)"
+                        fill="#82CC5F">Points</text>
+
+                        <text x="240" y="160" 
+                        class="line-chart-label" 
+                        fill="#82CC5F">Time</text>
+                    </g>
+
+                </svg>
             </div>
         </div>
     </body>

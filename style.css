@@ -142,6 +142,8 @@ body {
     grid-column-start: 2;
     grid-column-end: 3;
     grid-row-start: 1;
+    min-height: 250px;
+    max-height: 250px;
 }
 
 .bar {
@@ -154,6 +156,7 @@ body {
     grid-column-end: 3;
     grid-row-start: 2;
     grid-row-end: 4;
+    min-height: 575px;
 }
 
 .svg-container {
@@ -222,4 +225,13 @@ body {
 
 .bold {
     font-weight: 700;
+}
+
+.line-chart-label {
+    font-size: 5px;
+    font-weight: 700;
+}
+
+.line-graph {
+    transition: all 1s ;
 }

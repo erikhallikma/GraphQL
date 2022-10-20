@@ -21,6 +21,7 @@ query($id: Int, $path: String, $offset: Int) {
             type
         }
         amount
+        createdAt
     }
 }`
 
@@ -50,6 +51,7 @@ query($objectId: Int, $userId: Int){
         type: {_eq: "xp"}
     }) {
         objectId
+        createdAt
         amount
         path
     }

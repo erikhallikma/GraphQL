@@ -16,14 +16,19 @@ let percentage = 0;
 let auditUp = 0;
 let auditDown = 0;
 let auditRatio = 0;
+let path = "";
+let date_xp = new Object();
 
 
 let circle = document.querySelector(".circle");
 async function update_data() {
     console.log("updating data")
-    await get_user_xp(0)
+    date_xp = new Object();
+    get_path()
+    await get_user_xp(0, 0)
     level = get_user_level()
     percentage = next_level_percentage()
+    update_line_chart()
     circle.setAttribute("stroke-dasharray", `${percentage}, 100`);
     document.getElementById('login').innerHTML = login;
     document.getElementById('xp').innerHTML = Math.round(xp / 1000) + "kB";
@@ -87,18 +92,10 @@ async function get_user_id(login) {
         .then(response => {return response.data.user[0].id});
 }
 
-async function get_user_xp(offset) {
-    let path = "";
-    let piscine = true
-
-    if (offset === 0) {
-        xp = 0
-    }
-
+function get_path() {
     switch (active_div) {
         case "div01":
             path = "/johvi/div-01/";
-            piscine = false
             break;
         case "go":
             path = "/johvi/piscine-go/";
@@ -112,13 +109,34 @@ async function get_user_xp(offset) {
         default:
             console.log("oopsiewoopsie")
     }
+}
 
-    let data = [];
+async function get_user_xp(offset, total) {
+    let piscine = true
+    if (active_div === "div01") {
+        piscine = false
+    }
+
+    if (offset === 0) {
+        xp = 0
+    }
+
+    let count = 0;
+    let amount = 0;
+    let date = new Date();
+
     if (piscine) {
         await graphql_query(piscineXpRequest, {id: id, path: path, offset: offset})
         .then(response => {
             response.data.transaction.forEach((transaction) => {
-                data.push(transaction.amount);
+                count++;
+                total += transaction.amount;
+                let date = new Date(transaction.createdAt).toISOString().split('T')[0]
+                if (date_xp[date] === undefined) {
+                    date_xp[date] = total
+                } else {
+                    date_xp[date] += transaction.amount;
+                }
             });
         })
     } else {
@@ -128,16 +146,25 @@ async function get_user_xp(offset) {
         // first element is id 26 (piscine-go) that returns undefined so i shift the array
         objects.data.progress.shift()
         for (let obj of objects.data.progress) {
-            data.push(await get_object_xp(obj.objectId))
+            count++;
+            let res = await get_object_xp(obj.objectId)
+            amount = res[0]
+            date = res[1]
+            total += amount;
+            if (date_xp[date] === undefined) {
+                date_xp[date] = total
+            } else {
+                date_xp[date] += amount;
+            }
         }
     }
 
-    xp += data.reduce((a, b) => a + b, 0);
-    if (data.length === 50) {
-        return await get_user_xp(offset + 50);
+    if (count === 50) {
+        return await get_user_xp(offset + 50, total);
     } else {
-        //updates the transactions counter
-        transactions = data.length + offset
+        //updates counters
+        transactions = count + offset
+        xp = total
     }
 }
 
@@ -146,18 +173,19 @@ async function get_user_xp(offset) {
 async function get_object_xp(objectId) {
     return await graphql_query(xpAmountRequest, {objectId: objectId, userId: id})
     .then(response => {
-        let res = response.data.transaction[0].amount
-
+        let amount = response.data.transaction[0].amount
+        let date = new Date(response.data.transaction[0].createdAt).toISOString().split('T')[0]
         // some objectIds return multiple objects with differing xp amounts so i take the highest one
         // found out by trial and error that the highest xp amount is always right
         if (response.data.transaction.length > 1) {
             for (let transaction of response.data.transaction) {
-                if (transaction.amount > res) {
-                    res = transaction.amount
+                if (transaction.amount > amount) {
+                    amount = transaction.amount
+                    date = new Date(transaction.createdAt).toISOString().split('T')[0]
                 }
             }
         }
-        return res
+        return [amount, date]
     })
 }
 
@@ -226,4 +254,39 @@ function update_audit_graph() {
     document.getElementById("down").innerHTML = auditDown + "kB";
     document.getElementById("ratio").innerHTML = auditRatio;
 
+}
+
+function update_line_chart() {
+    document.querySelector(".upper-xp").innerHTML = Math.round(xp/1000) + "kB";
+    document.querySelector(".middle-xp").innerHTML = Math.round(xp/1000/2) + "kB";
+    document.querySelector(".first-date").innerHTML = Object.keys(date_xp)[0];
+    document.querySelector(".last-date").innerHTML = Object.keys(date_xp)[Object.keys(date_xp).length - 1];
+
+    // changes the line chart label location slightly to accomodate for the length of the label
+    if (Math.round(xp/1000/2) > 1000) {
+        document.querySelector(".middle-xp").setAttribute("x", "20");
+    } else {
+        document.querySelector(".middle-xp").setAttribute("x", "23");
+    }
+    
+    if (Math.round(xp/1000) > 1000) {
+        document.querySelector(".upper-xp").setAttribute("x", "20");
+    } else {
+        document.querySelector(".upper-xp").setAttribute("x", "23");
+    }
+
+    let xmin = 40
+    let xmax = 428
+    let ymin = 150
+    let xiter = xmax / Object.keys(date_xp).length
+    let count = 0
+    let res = ""
+
+    for (let date in date_xp) {
+        let x = xmin + xiter * count
+        let y = ymin - (date_xp[date] / xp * 150)
+        res += `${x},${y} `
+        count++
+    }
+    document.querySelector(".line-graph").setAttribute("points", res)
 }
