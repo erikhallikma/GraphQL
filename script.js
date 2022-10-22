@@ -141,13 +141,14 @@ async function get_user_xp(offset, total) {
         })
     } else {
         let objects = []
-        await graphql_query(divTaskIdRequest, {id: id})
-        .then(response => {objects = response})
-        // first element is id 26 (piscine-go) that returns undefined so i shift the array
-        objects.data.progress.shift()
+        await graphql_query(divTaskIdRequest, {id: id, offset: offset})
+        .then(response => {objects = response; console.log(response)})
         for (let obj of objects.data.progress) {
             count++;
             let res = await get_object_xp(obj.objectId)
+            if (res === undefined) {
+                continue;
+            }
             amount = res[0]
             date = res[1]
             total += amount;
@@ -173,6 +174,9 @@ async function get_user_xp(offset, total) {
 async function get_object_xp(objectId) {
     return await graphql_query(xpAmountRequest, {objectId: objectId, userId: id})
     .then(response => {
+        if (response.data.transaction.length === 0 ) {
+            return
+        }
         let amount = response.data.transaction[0].amount
         let date = new Date(response.data.transaction[0].createdAt).toISOString().split('T')[0]
         // some objectIds return multiple objects with differing xp amounts so i take the highest one
