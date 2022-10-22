@@ -27,7 +27,7 @@ query($id: Int, $path: String, $offset: Int) {
 
 //separate request for div xp since this has to include piscine type
 export const divTaskIdRequest = `
-query($id: Int){
+query($id: Int, $offset: Int) {
     progress(where: {
         userId: { _eq: $id }
         _and: [
@@ -38,7 +38,9 @@ query($id: Int){
             {object: {type: {_eq: "project"}}},
             {object: {type: {_eq: "piscine"}}}
         ]
-    }) {
+    }
+    offset: $offset
+    ) {
         objectId
     }
 }`
